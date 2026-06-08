@@ -12,11 +12,11 @@ driver:
     type: libvirt
 
 # node01 and node02 share an internal LAN (172.16.21.0/24) on top of the
-# "public" network (172.16.20.0/24) that all three hosts share. node03 only
+# "public" network (192.168.0.0/24) that all three hosts share. node03 only
 # has the "public" network. With "wireguard_network_priority: [lan, public]"
 # this proves per-pair endpoint selection:
 #   - node01 <-> node02 -> highest shared network "lan"    (172.16.21.x)
-#   - any    <-> node03 -> only shared network    "public" (172.16.20.x)
+#   - any    <-> node03 -> only shared network    "public" (192.168.0.x)
 platforms:
   - name: test-wg-networks-node01
     box: githubixx/ubuntu-24.04
@@ -24,11 +24,11 @@ platforms:
     cpus: 1
     interfaces:
       - auto_config: true
-        network_name: private_network
+        network_name: public_network
         type: static
-        ip: 172.16.20.10
+        ip: 192.168.0.10
       - auto_config: true
-        network_name: wireguard_lan
+        network_name: private_network
         type: static
         ip: 172.16.21.10
     groups:
@@ -40,11 +40,11 @@ platforms:
     cpus: 1
     interfaces:
       - auto_config: true
-        network_name: private_network
+        network_name: public_network
         type: static
-        ip: 172.16.20.20
+        ip: 192.168.0.20
       - auto_config: true
-        network_name: wireguard_lan
+        network_name: private_network
         type: static
         ip: 172.16.21.20
     groups:
@@ -56,9 +56,9 @@ platforms:
     cpus: 1
     interfaces:
       - auto_config: true
-        network_name: private_network
+        network_name: public_network
         type: static
-        ip: 172.16.20.30
+        ip: 192.168.0.30
     groups:
       - vpn
       - ubuntu
@@ -87,14 +87,14 @@ provisioner:
         wireguard_interface_restart: true
         wireguard_networks:
           lan: "172.16.21.10"
-          public: "172.16.20.10"
+          public: "192.168.0.10"
         wireguard_expected_peer_count: 2
         wireguard_expected_peers:
           - test-wg-networks-node02
           - test-wg-networks-node03
         wireguard_expected_endpoints:
           test-wg-networks-node02: "172.16.21.20:51820"
-          test-wg-networks-node03: "172.16.20.30:51820"
+          test-wg-networks-node03: "192.168.0.30:51820"
       test-wg-networks-node02:
         wireguard_addresses:
           - "10.40.0.2/24"
@@ -103,14 +103,14 @@ provisioner:
         wireguard_interface_restart: true
         wireguard_networks:
           lan: "172.16.21.20"
-          public: "172.16.20.20"
+          public: "192.168.0.20"
         wireguard_expected_peer_count: 2
         wireguard_expected_peers:
           - test-wg-networks-node01
           - test-wg-networks-node03
         wireguard_expected_endpoints:
           test-wg-networks-node01: "172.16.21.10:51820"
-          test-wg-networks-node03: "172.16.20.30:51820"
+          test-wg-networks-node03: "192.168.0.30:51820"
       test-wg-networks-node03:
         wireguard_addresses:
           - "10.40.0.3/24"
@@ -118,14 +118,14 @@ provisioner:
         wireguard_persistent_keepalive: "30"
         wireguard_interface_restart: true
         wireguard_networks:
-          public: "172.16.20.30"
+          public: "192.168.0.30"
         wireguard_expected_peer_count: 2
         wireguard_expected_peers:
           - test-wg-networks-node01
           - test-wg-networks-node02
         wireguard_expected_endpoints:
-          test-wg-networks-node01: "172.16.20.10:51820"
-          test-wg-networks-node02: "172.16.20.20:51820"
+          test-wg-networks-node01: "192.168.0.10:51820"
+          test-wg-networks-node02: "192.168.0.20:51820"
 
 scenario:
   name: wireguard-networks
