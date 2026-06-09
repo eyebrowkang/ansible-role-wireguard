@@ -24,7 +24,7 @@ platforms:
     cpus: 1
     interfaces:
       - auto_config: true
-        network_name: public_network
+        network_name: private_network
         type: static
         ip: 192.168.0.10
       - auto_config: true
@@ -40,7 +40,7 @@ platforms:
     cpus: 1
     interfaces:
       - auto_config: true
-        network_name: public_network
+        network_name: private_network
         type: static
         ip: 192.168.0.20
       - auto_config: true
@@ -56,7 +56,7 @@ platforms:
     cpus: 1
     interfaces:
       - auto_config: true
-        network_name: public_network
+        network_name: private_network
         type: static
         ip: 192.168.0.30
     groups:
